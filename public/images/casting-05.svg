@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+ <rect width="900" height="600" fill="#14221c"/>
+ <circle cx="770" cy="125" r="250" fill="#00A878" stroke="#D9DF3B" stroke-width="3"/>
+ <circle cx="770" cy="125" r="173" fill="none" stroke="#D9DF3B" stroke-width="3" opacity=".5"/>
+ <path d="M-30 525 L970 335" fill="none" stroke="#D9DF3B" stroke-width="20" opacity=".17"/>
+ <path d="M-30 570 L970 380" fill="none" stroke="#D9DF3B" stroke-width="2" opacity=".75"/>
+ <text x="50" y="78" font-size="21" letter-spacing="7" font-family="Arial,sans-serif" fill="#D9DF3B" font-weight="bold">LA CASA DEL ACTOR</text>
+ <text x="50" y="340" font-size="88" letter-spacing="-5" font-family="Arial,sans-serif" fill="white" font-weight="900">LA PUERTA</text>
+ <text x="50" y="440" font-size="88" letter-spacing="-5" font-family="Arial,sans-serif" fill="white" font-weight="900">AZUL</text>
+ <text x="50" y="550" font-size="20" letter-spacing="5" font-family="Arial,sans-serif" fill="#D9DF3B">CASTING DE EJEMPLO / 05</text>
+ <text x="705" y="280" font-size="180" font-family="Arial,sans-serif" fill="#D9DF3B" opacity=".65">✳</text>
+ </svg>

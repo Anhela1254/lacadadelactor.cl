@@ -1,0 +1,36 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.jsx';
+import CastingsPage from './pages/CastingsPage.jsx';
+import TalentosPage from './pages/TalentosPage.jsx';
+import TalentoPerfilPage from './pages/TalentoPerfilPage.jsx';
+import BlogPage from './pages/BlogPage.jsx';
+import BlogArticlePage from './pages/BlogArticlePage.jsx';
+import ServiciosPage from './pages/ServiciosPage.jsx';
+import PlanesPage from './pages/PlanesPage.jsx';
+import RegistroPage from './pages/RegistroPage.jsx';
+import CuentaPage from './pages/CuentaPage.jsx';
+import AdminPage from './pages/AdminPage.jsx';
+import RoleDashboardPage from './pages/RoleDashboardPage.jsx';
+import './styles.css';
+import './pages/CastingsPage.css';
+import './pages/Talentos.css';
+import './pages/NuevasSecciones.css';
+
+const path = decodeURIComponent(window.location.pathname.replace(/\/+$/, '') || '/');
+function Routes(){
+  if(path==='/castings')return <CastingsPage/>;
+  if(path==='/talentos')return <TalentosPage/>;
+  if(path.startsWith('/talentos/'))return <TalentoPerfilPage slug={path.slice('/talentos/'.length)}/>;
+  if(path==='/blog')return <BlogPage/>;
+  if(path.startsWith('/blog/'))return <BlogArticlePage slug={path.slice('/blog/'.length)}/>;
+  if(path==='/servicios')return <ServiciosPage/>;
+  if(path==='/precios'||path==='/planes')return <PlanesPage/>;
+  if(path==='/registro')return <RegistroPage/>;
+  if(path==='/ingresar'||path==='/mi-cuenta')return <CuentaPage/>;
+  if(path==='/administracion')return <AdminPage/>;
+  if(path==='/panel-actor')return <RoleDashboardPage role="actor"/>;
+  if(path==='/panel-productor')return <RoleDashboardPage role="productor"/>;
+  return <App/>;
+}
+createRoot(document.getElementById('root')).render(<React.StrictMode><Routes/></React.StrictMode>);

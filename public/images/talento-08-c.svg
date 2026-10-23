@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="195 150 390 520" role="img" aria-label="Marcador artístico de posición FOTO 08; reemplazar por una fotografía">
+<defs>
+ <linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e4e5dc"/><stop offset="1" stop-color="#fcfcf6"/></linearGradient>
+ <linearGradient id="coat" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#22453c"/><stop offset="1" stop-color="#1b1d1c"/></linearGradient>
+ <pattern id="dots" width="27" height="27" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#234538" opacity=".14"/></pattern>
+</defs>
+<rect width="780" height="1000" fill="url(#b)"/>
+<rect width="780" height="1000" fill="url(#dots)"/>
+<circle cx="390" cy="364" r="289" fill="#00A878" opacity=".2"/>
+<circle cx="390" cy="364" r="270" stroke="#173b30" stroke-width="1" opacity=".25" fill="none"/>
+<path d="M80 1000 Q88 722 244 676 L325 635 L465 637 L564 676 Q713 738 726 1000Z" fill="url(#coat)"/>
+<path d="M310 658 L386 814 L467 657 L429 625 L344 621Z" fill="#1b1d1c" opacity=".91"/>
+<path d="M347 555 L345 686 Q383 741 428 679 L426 555Z" fill="#BA9376"/>
+
+<ellipse cx="393" cy="389" rx="111" ry="157" fill="#BA9376"/>
+<path d="M304 343 Q312 228 379 207 Q451 202 469 311 Q427 279 396 284 Q336 290 304 343Z" fill="#26332f"/>
+<path d="M322 397 Q347 384 362 395 M418 391 Q436 380 456 392" fill="none" stroke="#26332f" stroke-width="5" stroke-linecap="round"/>
+<path d="M334 418 L363 418 M421 418 L449 418" stroke="#26332f" stroke-width="5" stroke-linecap="round"/>
+<path d="M391 426 L383 475 L396 478" fill="none" stroke="#805c52" opacity=".56" stroke-width="3" stroke-linecap="round"/>
+<path d="M361 514 Q389 531 418 512" fill="none" stroke="#784a43" stroke-width="4" stroke-linecap="round"/>
+<path d="M300 680 L385 826 L350 1000 L250 1000Z M466 672 L389 826 L436 1000 L541 1000Z" fill="#22453c" opacity=".92"/>
+<path d="M48 56 H166 M48 56 V174 M732 56 H614 M732 56 V174" stroke="#173b30" stroke-width="4" fill="none"/>
+<rect x="36" y="850" width="708" height="112" fill="#ffffff" opacity=".91"/>
+<text x="62" y="901" font-family="Arial, sans-serif" font-weight="900" font-size="33" letter-spacing="2" fill="#17382e">FOTO 08</text>
+<text x="62" y="938" font-family="Arial, sans-serif" font-size="17" letter-spacing="3" fill="#008F70">IMAGEN DEMOSTRATIVA · REEMPLAZABLE</text>
+<text x="680" y="130" font-family="Arial, sans-serif" font-size="78" font-weight="900" fill="#00A878" opacity=".85">✳</text>
+</svg>
