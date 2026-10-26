@@ -237,3 +237,4 @@
   .tl-modal-overlay { padding:10px; }
 }
 @media(prefers-reduced-motion:reduce){.tl-intro-shape{animation:none;}}
+.tl-socio-badge{position:absolute;top:15px;left:15px;z-index:3;background:#d9df3b;color:#183322;font-size:11px;font-weight:900;letter-spacing:.07em;padding:10px 13px;border-radius:3px}

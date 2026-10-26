@@ -29,7 +29,7 @@ function TalentCard({ talento, index }) {
           <span>CONOCE SU PERFIL</span>
           <span className="tl-photo-arrow"><ArrowUpRight size={26} /></span>
         </div>
-        <span className="tl-photo-index">{String(index + 1).padStart(2, '0')}</span>
+        {talento.tipoPerfil==='socio'&&!talento.demo&&<span className="tl-socio-badge">SOCIO LCDA</span>}<span className="tl-photo-index">{String(index + 1).padStart(2, '0')}</span>
       </div>
       <div className="tl-card-caption">
         <div><h3>{talento.nombre}</h3><span>{talento.especialidad} · {talento.ciudad}</span></div>
@@ -53,6 +53,7 @@ export default function TalentosPage() {
       const texto = `${t.nombre} ${t.ciudad} ${t.pais} ${t.especialidad} ${t.disciplinas.join(' ')}`.toLocaleLowerCase('es');
       return coincideCategoria && texto.includes(palabra);
     });
+    if(orden==='original')items.sort((a,b)=>(a.demo?1:0)-(b.demo?1:0)||(a.tipoPerfil==='socio'?0:1)-(b.tipoPerfil==='socio'?0:1));
     if (orden === 'az') items.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
     if (orden === 'za') items.sort((a, b) => b.nombre.localeCompare(a.nombre, 'es'));
     return items;
@@ -98,9 +99,9 @@ export default function TalentosPage() {
           </div>
         </div>
 
-        <div className="tl-results-count"><span>{filtrados.length} {filtrados.length === 1 ? 'talento' : 'talentos'}</span><span>PERFILES DEMOSTRATIVOS · FOTOS EDITABLES</span></div>
+        <div className="tl-results-count"><span>{filtrados.length} {filtrados.length === 1 ? 'talento' : 'talentos'}</span><span>DIRECTORIO EDITABLE · ALGUNOS PERFILES SON DE EJEMPLO</span></div>
         {filtrados.length ? <div className="tl-grid">{filtrados.map((talento, index) => <TalentCard key={talento.slug} talento={talento} index={index}/>)}</div> : <div className="tl-no-results"><Search size={40}/><h3>No encontramos perfiles</h3><p>Intenta otro nombre, ciudad o categoría.</p><button type="button" className="tl-reset" onClick={clearFilters}>Limpiar filtros <ArrowRight size={18}/></button></div>}
-        <p className="tl-note">* Los nombres, biografías y créditos incluidos son ejemplos ficticios. Reemplázalos por datos e imágenes autorizados antes de publicar tu plataforma.</p>
+        <p className="tl-note">* Los perfiles iniciales son ficticios. Los perfiles nuevos publicados por administración pueden ser reales; verifica la autorización de publicación de cada uno.</p>
       </section>
       <section className="tl-cta"><div className="container tl-cta-inner"><span className="tl-eyebrow">ENCUENTRA TU SIGUIENTE HISTORIA</span><h2>el talento hace<br/><em>la diferencia.</em></h2><a href="/castings" className="tl-cta-button">ver oportunidades <ArrowUpRight size={20}/></a></div></section>
     </main><Footer/></>;

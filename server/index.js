@@ -13,6 +13,8 @@ import { root, initialize, readData, updateData } from './store.js';
 import { hashPassword, checkPassword } from './security.js';
 import { seedDemoAccounts, accountAllowedInEnvironment } from './demo-accounts.js';
 import { COLLECTIONS, seedCatalog, getCatalog, normalizeEntry, entryId } from './catalog.js';
+import {textField,emailValid,projectInput,activeMember,activeCreator,validateActivity,validateRoom} from './community.js';
+import { serviciosData } from '../src/data/serviciosData.js';
 
 const PORT=Number(process.env.API_PORT || 3002);
 const PROD=process.env.NODE_ENV==='production';
@@ -97,7 +99,7 @@ app.get('/api/me',async(req,res,next)=>{try{const id=verifyToken(tokenCookie(req
 app.post('/api/logout',(req,res)=>{res.clearCookie('lca_session',{httpOnly:true,sameSite:'lax',secure:PROD,path:'/'});res.json({ok:true});});
 app.post('/api/servicios',limiter,async(req,res,next)=>{
   try{const {servicio,nombre,email,whatsapp,drive,mensaje}=req.body||{};
-    if(!['reel','book','selftape'].includes(servicio)||typeof nombre!=='string'||nombre.trim().length<3||nombre.length>100||typeof email!=='string'||!/^\S+@\S+\.\S+$/.test(email)||email.length>160||typeof whatsapp!=='string'||whatsapp.trim().length<7||whatsapp.length>24||typeof mensaje!=='string'||mensaje.length>1500||typeof drive!=='string'||drive.length>1000||Boolean(drive)&&!/^https:\/\//i.test(drive))return res.status(400).json({error:'Revisa los datos de la solicitud.'});
+    if(!serviciosData.some(s=>s.id===servicio)||typeof nombre!=='string'||nombre.trim().length<3||nombre.length>100||typeof email!=='string'||!/^\S+@\S+\.\S+$/.test(email)||email.length>160||typeof whatsapp!=='string'||whatsapp.trim().length<7||whatsapp.length>24||typeof mensaje!=='string'||mensaje.length>1500||typeof drive!=='string'||drive.length>1000||Boolean(drive)&&!/^https:\/\//i.test(drive))return res.status(400).json({error:'Revisa los datos de la solicitud.'});
     const id=`SRV-${randomBytes(5).toString('hex').toUpperCase()}`;
     await updateData('requests.json',async data=>({next:[...data,{id,servicio,nombre:nombre.trim(),email:email.trim(),whatsapp:whatsapp.trim(),drive:drive.trim(),mensaje:mensaje.trim(),creado:new Date().toISOString()}],result:true}));
     res.status(201).json({ok:true,folio:id});
@@ -198,6 +200,99 @@ app.post('/api/admin-propuestas/:id/rechazar',onlyAdmin,routeLimiter,async(req,r
  await updateData('propuestas.json',async rows=>({next:rows.map(x=>x.id===req.params.id?{...x,estado:'rechazado'}:x),result:true}));res.json({ok:true});
 }catch(e){next(e);}});
 
+
+// ---- COMUNIDAD / PROYECTOS / ACADEMIA. Persistencia local de desarrollo. ----
+// Ninguna solicitud es un cobro, una reserva o una inscripción confirmada.
+const fresh=(req,res,next)=>{res.setHeader('Cache-Control','no-store');next();};
+const publicError=(e,res,next)=>e.message?.startsWith('Completa')||e.message?.startsWith('Debes')||e.message?.startsWith('La hora')||e.message?.startsWith('Comprueba')?res.status(400).json({error:e.message}):next(e);
+const allowCreator=async(req,res,next)=>{try{const account=await sessionUser(req);if(!account)return res.status(401).json({error:'Debes iniciar sesión para continuar.'});if(!activeCreator(account,PROD))return res.status(403).json({error:'Tu membresía o cuenta debe estar activa para colaborar. Puedes consultar tu estado en Mi cuenta.'});req.account=account;next();}catch(e){next(e);}};
+const allowMember=async(req,res,next)=>{try{const account=await sessionUser(req);if(!account)return res.status(401).json({error:'Debes iniciar sesión para continuar.'});if(!activeMember(account,PROD))return res.status(403).json({error:'Las actividades y salas están reservadas para actores miembros activos.'});req.account=account;next();}catch(e){next(e);}};
+app.get('/api/proyectos',fresh,async(req,res,next)=>{try{
+ const items=(await readData('proyectos-comunidad.json')).filter(p=>p.estado==='aprobado').map(({autorId,...publicInfo})=>publicInfo);
+ res.json({items});
+}catch(e){next(e);}});
+app.post('/api/proyectos',allowCreator,routeLimiter,async(req,res,next)=>{try{
+ const clean=projectInput(req.body),id='PRJ-'+randomBytes(8).toString('hex');
+ await updateData('proyectos-comunidad.json',async rows=>({next:[{...clean,id,autorId:req.account.id,estado:'pendiente',fecha:new Date().toISOString()},...rows],result:true}));
+ res.status(201).json({ok:true,message:'Proyecto enviado. Se publicará únicamente después de la revisión del equipo.',id});
+}catch(e){publicError(e,res,next);}});
+app.get('/api/mi-comunidad',allowCreator,fresh,async(req,res,next)=>{try{
+ const id=req.account.id;
+ const [proyectos,participaciones,inscripciones,salas]=await Promise.all(['proyectos-comunidad.json','participaciones.json','inscripciones.json','salas.json'].map(readData));
+ res.json({proyectos:proyectos.filter(x=>x.autorId===id),participaciones:participaciones.filter(x=>x.usuarioId===id),inscripciones:inscripciones.filter(x=>x.usuarioId===id),salas:salas.filter(x=>x.usuarioId===id)});
+}catch(e){next(e);}});
+app.get('/api/proyectos/mis-propuestas',allowCreator,fresh,async(req,res,next)=>{try{
+ res.json({items:(await readData('proyectos-comunidad.json')).filter(p=>p.autorId===req.account.id)});
+}catch(e){next(e);}});
+app.post('/api/proyectos/:id/participar',allowCreator,routeLimiter,async(req,res,next)=>{try{
+ const item=(await readData('proyectos-comunidad.json')).find(p=>p.id===req.params.id&&p.estado==='aprobado');
+ if(!item)return res.status(404).json({error:'Proyecto no disponible.'});
+ if(item.autorId===req.account.id)return res.status(400).json({error:'Ya eres autor de este proyecto.'});
+ const result=await updateData('participaciones.json',async rows=>{
+  if(rows.some(r=>r.proyectoId===item.id&&r.usuarioId===req.account.id))return {next:rows,result:false};
+  return {next:[{id:'COL-'+randomBytes(8).toString('hex'),proyectoId:item.id,usuarioId:req.account.id,autorId:item.autorId,estado:'pendiente',fecha:new Date().toISOString()},...rows],result:true};
+ });
+ res.status(result?201:409).json(result?{ok:true,message:'Tu interés quedó registrado. El equipo podrá gestionar la solicitud.'}:{error:'Ya enviaste una solicitud para este proyecto.'});
+}catch(e){next(e);}});
+app.get('/api/actividades',fresh,async(req,res,next)=>{try{
+ res.json({items:(await readData('actividades.json')).filter(x=>x.publicado===true).sort((a,b)=>a.fecha.localeCompare(b.fecha))});
+}catch(e){next(e);}});
+app.post('/api/actividades/:id/inscribir',allowMember,routeLimiter,async(req,res,next)=>{try{
+ const activity=(await readData('actividades.json')).find(x=>x.id===req.params.id&&x.publicado===true);
+ if(!activity)return res.status(404).json({error:'Actividad no disponible.'});
+ const result=await updateData('inscripciones.json',async rows=>{
+  if(rows.some(x=>x.actividadId===activity.id&&x.usuarioId===req.account.id))return {next:rows,result:false};
+  return {next:[{id:'INS-'+randomBytes(7).toString('hex'),actividadId:activity.id,usuarioId:req.account.id,estado:'solicitado',fecha:new Date().toISOString()},...rows],result:true};
+ });
+ res.status(result?201:409).json(result?{ok:true,message:'Solicitud de inscripción recibida. Pendiente de confirmación del equipo.'}:{error:'Ya solicitaste tu inscripción a esta actividad.'});
+}catch(e){next(e);}});
+app.post('/api/solicitudes-salas',allowMember,routeLimiter,async(req,res,next)=>{try{
+ const clean=validateRoom(req.body);
+ const id='SALA-'+randomBytes(7).toString('hex');
+ await updateData('salas.json',async rows=>({next:[{...clean,id,usuarioId:req.account.id,estado:'solicitado',creado:new Date().toISOString()},...rows],result:true}));
+ res.status(201).json({ok:true,id,message:'Solicitud recibida. Una persona del equipo debe confirmar la disponibilidad de la sala.'});
+}catch(e){publicError(e,res,next);}});
+app.post('/api/formacion/interes',registerLimiter,async(req,res,next)=>{try{
+ const {nombre,correo,curso,mensaje}=req.body||{};
+ const courseList=['autogestion','selftape','preparacion','book','industria','networking'];
+ if(textField(nombre,100).length<3||!emailValid(correo)||!courseList.includes(curso)||String(mensaje||'').length>700)return res.status(400).json({error:'Revisa nombre, correo y curso.'});
+ const id='ACA-'+randomBytes(7).toString('hex');
+ await updateData('formacion.json',async rows=>({next:[{id,nombre:textField(nombre,100),correo:correo.trim().toLowerCase(),curso,mensaje:textField(mensaje,700),fecha:new Date().toISOString(),estado:'pendiente'},...rows],result:true}));
+ res.status(201).json({ok:true,message:'Tu interés quedó registrado. No se ha realizado ninguna compra ni pago.'});
+}catch(e){next(e);}});
+app.post('/api/contacto',registerLimiter,async(req,res,next)=>{try{
+ const {nombre,correo,motivo,mensaje}=req.body||{};
+ if(textField(nombre,100).length<3||!emailValid(correo)||motivo!=='apoyo_fundacion'||String(mensaje||'').length>1500)return res.status(400).json({error:'Revisa nombre, correo y mensaje.'});
+ const id='CONT-'+randomBytes(7).toString('hex');
+ await updateData('contactos.json',async rows=>({next:[{id,nombre:textField(nombre,100),correo:correo.trim().toLowerCase(),motivo,mensaje:textField(mensaje,1500),estado:'pendiente',fecha:new Date().toISOString()},...rows],result:true}));
+ res.status(201).json({ok:true,message:'Mensaje registrado. El equipo podrá revisarlo desde administración; no se ha hecho ningún pago.'});
+}catch(e){next(e);}});
+// Operaciones de revisión exclusivas del administrador. Ningún contacto personal es público.
+app.get('/api/admin-comunidad/resumen',onlyAdmin,fresh,async(req,res,next)=>{try{
+ const files=['proyectos-comunidad.json','participaciones.json','actividades.json','inscripciones.json','salas.json','formacion.json','contactos.json','requests.json'];
+ const [proyectos,participaciones,actividades,inscripciones,salas,formacion,contactos,servicios]=await Promise.all(files.map(readData));
+ res.json({proyectos,participaciones,actividades,inscripciones,salas,formacion,contactos,servicios});
+}catch(e){next(e);}});
+app.post('/api/admin-comunidad/proyectos/:id/estado',onlyAdmin,routeLimiter,async(req,res,next)=>{try{
+ const estado=req.body?.estado;if(!['aprobado','rechazado'].includes(estado))return res.status(400).json({error:'Estado inválido.'});
+ const exists=await updateData('proyectos-comunidad.json',async rows=>({next:rows.map(x=>x.id===req.params.id?{...x,estado}:x),result:rows.some(x=>x.id===req.params.id)}));
+ if(!exists)return res.status(404).json({error:'Proyecto inexistente.'});res.json({ok:true});
+}catch(e){next(e);}});
+app.post('/api/admin-comunidad/actividades',onlyAdmin,routeLimiter,async(req,res,next)=>{try{
+ const clean=validateActivity(req.body),id='ACT-'+randomBytes(7).toString('hex');
+ await updateData('actividades.json',async rows=>({next:[{...clean,id,publicado:req.body.publicado===true},...rows],result:true}));
+ res.status(201).json({ok:true});
+}catch(e){publicError(e,res,next);}});
+app.delete('/api/admin-comunidad/actividades/:id',onlyAdmin,routeLimiter,async(req,res,next)=>{try{
+ await updateData('actividades.json',async rows=>({next:rows.filter(x=>x.id!==req.params.id),result:true}));res.json({ok:true});
+}catch(e){next(e);}});
+app.post('/api/admin-comunidad/solicitudes/:tipo/:id/estado',onlyAdmin,routeLimiter,async(req,res,next)=>{try{
+ const names={participaciones:'participaciones.json',inscripciones:'inscripciones.json',salas:'salas.json',formacion:'formacion.json',contactos:'contactos.json'};
+ const file=names[req.params.tipo],estado=req.body?.estado;
+ if(!file||!['pendiente','contactado','confirmado','rechazado'].includes(estado))return res.status(400).json({error:'Tipo o estado inválido.'});
+ const exists=await updateData(file,async rows=>({next:rows.map(x=>x.id===req.params.id?{...x,estado}:x),result:rows.some(x=>x.id===req.params.id)}));
+ if(!exists)return res.status(404).json({error:'Solicitud inexistente.'});res.json({ok:true});
+}catch(e){next(e);}});
 app.use('/api',(req,res)=>res.status(404).json({error:'Ruta de API no disponible.'}));
 if(PROD){const dist=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../dist');app.use(express.static(dist));app.get('*',(req,res)=>res.sendFile(path.join(dist,'index.html')));}
 app.use((err,req,res,next)=>{console.error('API error:',err.message);if(err.message==='FORMATO_NO_PERMITIDO')return res.status(400).json({error:'Solo se aceptan capturas JPG, PNG o WebP.'});if(err instanceof multer.MulterError)return res.status(400).json({error:err.code==='LIMIT_FILE_SIZE'?'La imagen supera los 5 MB.':'Error al procesar el archivo.'});res.status(500).json({error:'No fue posible completar la operación. Intenta nuevamente.'});});

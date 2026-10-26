@@ -12,6 +12,10 @@ import RegistroPage from './pages/RegistroPage.jsx';
 import CuentaPage from './pages/CuentaPage.jsx';
 import AdminPage from './pages/AdminPage.jsx';
 import RoleDashboardPage from './pages/RoleDashboardPage.jsx';
+import {NosotrosPage,ComunidadPage,FundacionPage} from './pages/InstitucionalPages.jsx';
+import ProyectosPage from './pages/ProyectosPage.jsx';
+import AcademiaPage from './pages/AcademiaPage.jsx';
+import BaseDatosPage from './pages/BaseDatosPage.jsx';
 import './styles.css';
 import './pages/CastingsPage.css';
 import './pages/Talentos.css';
@@ -19,6 +23,12 @@ import './pages/NuevasSecciones.css';
 
 const path = decodeURIComponent(window.location.pathname.replace(/\/+$/, '') || '/');
 function Routes(){
+  if(path==='/nosotros'||path==='/conocenos')return <NosotrosPage/>;
+  if(path==='/comunidad')return <ComunidadPage/>;
+  if(path==='/fundacion'||path==='/donaciones')return <FundacionPage/>;
+  if(path==='/proyectos'||path==='/hub')return <ProyectosPage/>;
+  if(path==='/academia'||path==='/talleres')return <AcademiaPage/>;
+  if(path==='/base-de-datos')return <BaseDatosPage/>;
   if(path==='/castings')return <CastingsPage/>;
   if(path==='/talentos')return <TalentosPage/>;
   if(path.startsWith('/talentos/'))return <TalentoPerfilPage slug={path.slice('/talentos/'.length)}/>;

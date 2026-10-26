@@ -5,7 +5,7 @@ import { randomBytes } from 'node:crypto';
 
 // Fuera de la carpeta del frontend: Vite NO debe poder servir cuentas ni recibos.
 export const root = path.resolve(process.env.LCA_DATA_DIR || path.join(os.homedir(), '.la-casa-del-actor-data')); 
-const safeFiles = new Set(['accounts.json','requests.json','castings.json','talentos.json','blog.json','propuestas.json']);
+const safeFiles = new Set(['accounts.json','requests.json','castings.json','talentos.json','blog.json','propuestas.json','proyectos-comunidad.json','participaciones.json','actividades.json','inscripciones.json','salas.json','formacion.json','contactos.json']);
 let queue = Promise.resolve();
 export async function initialize(){ await fs.mkdir(path.join(root,'comprobantes'),{recursive:true,mode:0o700}); }
 export async function readData(name){

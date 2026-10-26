@@ -69,7 +69,7 @@ function Brand({ inverted = false }) {
   return (
     <a className={`brand ${inverted ? 'brand-inverted' : ''}`} href="/" aria-label="La Casa del Actor, volver al inicio">
       <img className="brand-image" src="/images/logo-la-casa-del-actor.jpg" alt="Logo LCDA" />
-      <span className="brand-words"><strong>la casa del actor<span className="brand-dot">.</span></strong><small>casting · artistas · escena</small></span>
+      <span className="brand-words"><strong>la casa del actor<span className="brand-dot">.</span></strong><small>comunidad · formación · escena</small></span>
     </a>
   );
 }
@@ -83,9 +83,10 @@ export function Header() {
     return () => document.removeEventListener('keydown', onEscape);
   }, []);
   const nav = [
-    { title: 'inicio', href: '/' }, { title: 'castings', href: '/castings' },
-    { title: 'talentos', href: '/talentos' }, { title: 'blog', href: '/blog' },
-    { title: 'servicios', href: '/servicios' }, { title: 'planes', href: '/precios' }
+    { title: 'inicio', href: '/' }, { title: 'nosotros', href: '/nosotros' },
+    { title: 'comunidad', href: '/comunidad' }, { title: 'proyectos', href: '/proyectos' },
+    { title: 'academia', href: '/academia' }, { title: 'castings', href: '/castings' },
+    { title: 'talentos', href: '/talentos' }, { title: 'fundación', href: '/fundacion' }
   ];
   return (
     <>
@@ -134,11 +135,11 @@ function Hero() {
     <div className="container hero-grid">
       <div className="hero-copy">
         <div className="intro-label"><span className="status-dot" /> bienvenidos a la casa del actor</div>
-        <h1>tu próximo <span className="hero-emphasis">papel</span><br /> te <span className="underline-word">espera.</span></h1>
-        <p>El punto de encuentro entre quienes cuentan historias y quienes nacieron para interpretarlas. Castings, artistas y posibilidades reales.</p>
+        <h1>tu oficio tiene<br />una <span className="hero-emphasis">casa.</span></h1>
+        <p>Una comunidad de actores y actrices en Chile para acompañarnos, crecer, crear proyectos, formarnos y abrir oportunidades reales en el oficio actoral.</p>
         <div className="hero-buttons">
-          <a href="/castings" className="button button-primary">explorar castings <ArrowUpRight size={20} /></a>
-          <OutLink href={LINKS.registro} className="button button-outline">conocer el proyecto <ArrowRight size={19} /></OutLink>
+          <a href="/registro?role=actor" className="button button-primary">ser parte de la comunidad <ArrowUpRight size={20} /></a>
+          <OutLink href="/nosotros" className="button button-outline">conocer el proyecto <ArrowRight size={19} /></OutLink>
         </div>
         <div className="hero-footnote"><span className="round-asterisk">✳</span><span>cine / teatro / publicidad / televisión<br />conectando talento en todo chile</span></div>
       </div>
@@ -150,13 +151,13 @@ function Hero() {
         <div className="hero-side-number">001 / 2026</div>
       </div>
     </div>
-    <div className="hero-bottom"><span>plataforma de castings</span><span>creada para una comunidad artística</span><a href="#universo" aria-label="Bajar a explorar">desliza para descubrir <ArrowDownRight size={19} /></a></div>
+    <div className="hero-bottom"><span>formación · colaboración · oportunidades</span><span>una comunidad de la industria actoral de Chile</span><a href="#universo" aria-label="Bajar a explorar">desliza para descubrir <ArrowDownRight size={19} /></a></div>
   </section>;
 }
 
 function Marquee() {
   return <div className="marquee" aria-hidden="true"><div className="marquee-track">
-    {Array.from({ length: 4 }).map((_, i) => <span key={i}>CASTINGS <span>✳</span> TALENTO <span>✳</span> CREATIVIDAD <span>✳</span> ACCIÓN <span>✳</span> </span>)}
+    {Array.from({ length: 4 }).map((_, i) => <span key={i}>COMUNIDAD <span>✳</span> FORMACIÓN <span>✳</span> CREACIÓN <span>✳</span> OPORTUNIDADES <span>✳</span> </span>)}
   </div></div>;
 }
 
@@ -164,8 +165,8 @@ function Universe() {
   const links = [
     { count: '01', title: 'encuentra tu casting', text: 'Las oportunidades empiezan con un primer paso.', href: '/castings', icon: Film, featured: true },
     { count: '02', title: 'descubre talentos', text: 'Perfiles que merecen el centro de la escena.', href: '/talentos', icon: Star },
-    { count: '03', title: 'crea en conjunto', text: 'Una producción se construye con su equipo.', href: '#productoras', icon: Theater },
-    { count: '04', title: 'sigue aprendiendo', text: 'Recursos para desarrollar tu oficio.', href: '/blog', icon: Play }
+    { count: '03', title: 'crea en conjunto', text: 'Una producción se construye con su equipo.', href: '/proyectos', icon: Theater },
+    { count: '04', title: 'sigue aprendiendo', text: 'Recursos para desarrollar tu oficio.', href: '/academia', icon: Play }
   ];
   return <section id="universo" className="universe section-pad"><div className="container">
     <div className="universe-head"><AccentHeading overline="BIENVENIDXS A LA ESCENA" title="un universo de" accent="posibilidades" body="Actuar, crear, producir y crecer. Elige desde dónde quieres comenzar." /><div className="big-asterisk" aria-hidden="true">✳</div></div>
@@ -215,7 +216,7 @@ function Castings() {
       <div className="select-wrap"><select value={filter} onChange={e => setFilter(e.target.value)} aria-label="Filtrar por tipo"><option>Todos</option>{[...new Set(actualCastings.map(c => c.type))].map(t => <option key={t}>{t}</option>)}</select><ChevronDown size={17} /></div>
       <div className="select-wrap"><select value={region} onChange={e => setRegion(e.target.value)} aria-label="Filtrar por región"><option>Todas las regiones</option>{[...new Set(actualCastings.map(c => c.location))].map(r => <option key={r}>{r}</option>)}</select><ChevronDown size={17} /></div>
     </div>
-    <div className="castings-small-meta"><span>{filtered.length} proyectos de ejemplo</span><span>vista previa · visita el catálogo completo</span></div>
+    <div className="castings-small-meta"><span>{filtered.length} convocatorias en catálogo</span><span>vista previa · visita el catálogo completo</span></div>
     <div className="castings-grid">
       {filtered.length > 0 ? filtered.map(c => <article key={c.id} className={`casting-card card-${c.tone}`}>
         <div className="casting-card-top"><span>{c.type} / {c.number}</span><ArrowUpRight size={23} /></div>
@@ -224,7 +225,7 @@ function Castings() {
         <div className="casting-card-foot"><span><MapPin size={15} /> {c.producer}</span><button onClick={() => setSelected(c)}>ver ficha <ArrowUpRight size={18} /></button></div>
       </article>) : <div className="no-results"><Search size={32} /><h3>Sin resultados</h3><p>Prueba otra palabra o elimina los filtros.</p><button className="button button-outline" onClick={() => { setQuery(''); setFilter('Todos'); setRegion('Todas las regiones'); }}>limpiar filtros <ArrowLeft size={16} /></button></div>}
     </div>
-    <p className="castings-disclaimer">Todos los proyectos, productoras y condiciones de esta sección son datos ficticios. No hay castings reales ni recepción de postulaciones.</p>
+    <p className="castings-disclaimer">Las convocatorias iniciales son ejemplos ficticios; las incorporadas por el equipo pueden ser reales. Verifica fechas y condiciones de cada publicación.</p>
     <CastingModal casting={selected} onClose={() => setSelected(null)} />
   </div></section>;
 }
@@ -263,7 +264,7 @@ function Plans() {
   return <section id="planes" className="plans section-pad"><div className="container">
     <div className="plans-header"><AccentHeading overline="ACCESO / PLANES" title="más escena." accent="menos límites." body="Explora las opciones de participación. Importes de ejemplo: confirma tus condiciones antes de publicar." /></div>
     <div className="plans-grid">{planesData.map(plan=><div className={`plan-card ${plan.destaque ? 'plan-featured' : ''}`} key={plan.id}>
-      <div className="plan-top"><span>{plan.etiqueta}</span><Star size={22}/></div><h3>{plan.nombre}</h3><div className="plan-price">{plan.monto}<span>{plan.moneda} · demostración</span></div>
+      <div className="plan-top"><span>{plan.etiqueta}</span><Star size={22}/></div><h3>{plan.nombre}</h3><div className="plan-price">{plan.monto}<span>{plan.moneda||'Tarifa pendiente'} · referencia</span></div>
       <ul>{plan.beneficios.map(feature=><li key={feature}><Check size={17}/>{feature}</li>)}</ul>
       <a href={`/registro?role=${plan.rol}&plan=${plan.id}`} className={`button ${plan.destaque ? 'button-primary' : 'button-outline'}`}>{plan.cta} <ArrowUpRight size={18}/></a>
     </div>)}</div>
@@ -303,9 +304,19 @@ function CTA() {
 }
 
 export function Footer() {
-  return <footer className="footer"><div className="container"><div className="footer-main"><div className="footer-intro"><Brand inverted/><p>La Casa del Actor: una nueva identidad para conectar talento, proyectos y comunidad artística.</p></div><div className="footer-col"><h3>explora</h3><a href="/castings">castings</a><a href="/talentos">talentos</a><a href="/servicios">servicios</a><a href="/blog">blog</a></div><div className="footer-col"><h3>la plataforma</h3><a href="/">inicio</a><a href="/precios">planes</a><a href="/#preguntas">preguntas frecuentes</a><a href="/registro?role=actor">crear cuenta</a></div><div className="footer-col"><h3>comunidad</h3><a href="/#comunidad">nuestras actividades <ArrowUpRight size={14}/></a><a href="/castings">oportunidades <ArrowUpRight size={14}/></a><a href="/talentos">artistas <ArrowUpRight size={14}/></a><a href="https://www.instagram.com/lacasadelactor_/" target="_blank" rel="noopener noreferrer">Instagram @lacasadelactor_ <ArrowUpRight size={14}/></a><a href="/ingresar">ingresar <ArrowUpRight size={14}/></a><a href="/servicios">servicios <ArrowUpRight size={14}/></a></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} · LA CASA DEL ACTOR</span><p>Prototipo: registro local con contraseña protegida y comprobantes privados pendientes de revisión. No verifica ni procesa pagos bancarios; castings y tarifas son ejemplos.</p><a href="/">volver arriba ↑</a></div></div></footer>;
+ return <footer className="footer"><div className="container"><div className="footer-main"><div className="footer-intro"><Brand inverted/><p>La Casa del Actor es comunidad, fundación y organización para fortalecer el oficio actoral en Chile.</p></div><div className="footer-col"><h3>la casa</h3><a href="/nosotros">nosotros</a><a href="/comunidad">comunidad</a><a href="/proyectos">proyectos colaborativos</a><a href="/fundacion">fundación y donaciones</a></div><div className="footer-col"><h3>descubre</h3><a href="/academia">academia y talleres</a><a href="/castings">castings</a><a href="/base-de-datos">base de datos de actores</a><a href="/servicios">marketplace de servicios</a><a href="/blog">noticias y blog</a></div><div className="footer-col"><h3>tu acceso</h3><a href="/registro?role=actor">sé parte</a><a href="/precios">planes y acceso</a><a href="/ingresar">ingresar</a><a href="https://www.instagram.com/lacasadelactor_/" target="_blank" rel="noopener noreferrer">Instagram <ArrowUpRight size={14}/></a></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} · LA CASA DEL ACTOR</span><p>Versión en desarrollo. Los pagos, donaciones y compras no se procesan en esta plataforma. Verifica imágenes y colaboraciones antes de publicar.</p><a href="/">volver arriba ↑</a></div></div></footer>;
 }
+function HomeHighlights(){
+ const {items}=useCatalog('blog',blogData);const [i,setI]=useState(0);
+ const list=[...items].filter(x=>x.publicado!==false).sort((a,b)=>String(b.fecha||'').localeCompare(String(a.fecha||''))).slice(0,4);
+ const current=list[i%Math.max(list.length,1)];
+ if(!current)return null;
+ return <section className="lc-highlights"><div className="container lc-highlights-row"><div><span>✳ EN LA CASA / NOVEDADES</span><h2>{current.titulo}</h2><p>{current.resumen}</p><a href={`/blog/${current.slug}`}>Explorar noticia <ArrowUpRight size={17}/></a><small>{current.demo?'Contenido de muestra editable':'Contenido publicado por la comunidad'}</small></div><img src={current.imagen||'/images/IMG_0306.JPG'} alt="Portada de la publicación"/><div className="lc-highlight-controls"><span>0{i%list.length+1} / 0{list.length}</span><button onClick={()=>setI(v=>(v-1+list.length)%list.length)} aria-label="Novedad anterior"><ArrowLeft size={19}/></button><button onClick={()=>setI(v=>(v+1)%list.length)} aria-label="Siguiente novedad"><ArrowRight size={19}/></button></div></div></section>;
+}
+function CommunityWelcome(){return <section className="lc-welcome section-pad"><div className="container lc-welcome-inner"><div><span className="overline">✳ LA CASA DEL ACTOR / QUIÉNES SOMOS</span><h2>un oficio que se construye <em>en comunidad.</em></h2><p>La Casa del Actor integra comunidad, fundación y organización para impulsar el desarrollo artístico, laboral y humano de actores y actrices. Nacimos para acompañar trayectorias, compartir herramientas y construir un sentido real de pertenencia.</p><p>En una industria marcada por la inestabilidad, proponemos un espacio donde el camino actoral no se recorra en soledad.</p><div className="lc-home-actions"><a href="/registro?role=actor" className="button button-primary">sé parte de la comunidad <ArrowUpRight size={18}/></a><a href="/nosotros" className="text-link">conoce la historia <ArrowUpRight size={18}/></a></div></div><div className="lc-welcome-photo"><img src="/images/IMG_5808.jpg" loading="lazy" alt="Encuentro de miembros de La Casa del Actor"/><span>HAGAMOS CASA JUNTOS ✳</span></div></div></section>}
+function CommunityPaths(){const paths=[['01 / ACADEMIA','Cursos y talleres','Formación para self tape, autogestión y creación de material actoral.','/academia','/images/IMG_5569.JPG'],['02 / HUB','Proyectos colaborativos','Un foro donde las ideas encuentran colaboradores y nuevas voces.','/proyectos','/images/IMG_0316.jpg'],['03 / RED','Beneficios y encuentros','Actividades, networking, espacios de ensayo y colaboración.','/comunidad','/images/IMG_0419.JPG']];return <section className="lc-paths section-pad"><div className="container"><div className="lc-paths-title"><span className="overline">✳ CRECER CON LA COMUNIDAD</span><h2>conecta. aprende. <em>crea.</em></h2></div><div className="lc-paths-grid">{paths.map(([tag,title,description,url,img])=><a href={url} key={url} className="lc-path-card"><img src={img} alt="Archivo de actividades de La Casa del Actor" loading="lazy"/><div><small>{tag}</small><h3>{title}</h3><p>{description}</p><span>conocer más <ArrowUpRight size={17}/></span></div></a>)}</div></div></section>}
+function DonateBanner(){return <section className="lc-donate-home"><div className="container"><div><span className="overline">✳ FUNDACIÓN LA CASA DEL ACTOR</span><h2>tu aporte también <em>hace casa.</em></h2><p>Ayúdanos a crear formación gratuita, impulsar proyectos culturales, mantener espacios de encuentro y abrir oportunidades laborales para la comunidad actoral.</p><a className="button button-white" href="/fundacion">conoce cómo apoyar <ArrowUpRight size={19}/></a></div><span className="lc-donate-star" aria-hidden="true">✳</span></div></section>}
 
 export default function App() {
-  return <><Header/><main><Hero/><Marquee/><Universe/><Castings/><Talents/><Producers/><ComunidadGaleria/><Blog/><Plans/><Faq/><CTA/></main><Footer/></>;
+  return <><Header/><main><Hero/><HomeHighlights/><Marquee/><CommunityWelcome/><Universe/><Castings/><Talents/><Producers/><CommunityPaths/><ComunidadGaleria/><Blog/><Plans/><DonateBanner/><Faq/><CTA/></main><Footer/></>;
 }
